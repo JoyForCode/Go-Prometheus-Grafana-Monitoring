@@ -13,7 +13,7 @@ type PowerControl struct {
 	PowerCapacityWatts float64 `json:"PowerCapacityWatts"`
 }
 
-func get_RedfishMetrics() (*PowerControl, error){
+func RetrievePowerValues() (*PowerControl, error){
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
