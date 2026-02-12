@@ -22,7 +22,7 @@ var (
 
 func InitMetrics() {
 	prometheus.MustRegister(psuWatts)
-	prometheus.MustRegister()
+	prometheus.MustRegister(psuCapacityWatts)
 }
 
 func UpdateMetrics(power *PowerControl) {
