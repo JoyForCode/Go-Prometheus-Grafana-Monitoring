@@ -22,7 +22,7 @@ var (
 	redfishUp = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "redfish_up",
-			Help: "Redfish API Reponse Status (1 = up, 0 = down)",
+			Help: "Redfish API Response Status (1 = up, 0 = down)",
 		},
 	)
 )
