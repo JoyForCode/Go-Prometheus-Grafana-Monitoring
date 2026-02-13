@@ -25,7 +25,7 @@ func RetrievePowerValues() (*PowerControl, error) {
 
 	client := &http.Client{
 		Transport: tr,
-		Timeout:   20 * time.Second,
+		Timeout:   10 * time.Second,
 	}
 
 	req, err := http.NewRequest(

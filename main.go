@@ -13,7 +13,7 @@ func main() {
 
 	go func() {
 		//time.Sleep(20 * time.Second)
-		ticker := time.NewTicker(15 * time.Second)
+		ticker := time.NewTicker(20 * time.Second)
 		defer ticker.Stop()
 
 		fetch := func() {
