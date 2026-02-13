@@ -15,8 +15,10 @@ func main() {
 		for {
 			power, err := RetrievePowerValues()
 			if err != nil {
+				UpdateHealth(false)
 				log.Println("Error fetching power values:", err)
 			} else {
+				UpdateHealth(true)
 				UpdateMetrics(power)
 			}
 
