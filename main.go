@@ -26,6 +26,6 @@ func main() {
 
 	http.Handle("/metrics", promhttp.Handler())
 
-	log.Println("Exproter running on :9105")
+	log.Println("Exporter running on :9105")
 	log.Fatal(http.ListenAndServe(":9105", nil))
 }
