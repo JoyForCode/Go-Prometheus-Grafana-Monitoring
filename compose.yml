@@ -1,0 +1,39 @@
+services:
+  redfish-exporter:
+    build: .
+    container_name: redfish-exporter
+    restart: unless-stopped
+    ports:
+      - "9105:9105"
+    environment:
+      - REDFISH_USER=root
+      - REDFISH_PASS=calvin
+
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports: 
+      - "9090:9090"
+    command: 
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=7d"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  prometheus_data:
+  grafana_data:
