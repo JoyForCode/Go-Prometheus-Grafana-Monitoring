@@ -1,6 +1,8 @@
 package main
 
 import (
+	"goprom/internal/metrics"
+	"goprom/internal/redfish"
 	"log"
 	"net/http"
 	"time"
@@ -9,7 +11,7 @@ import (
 )
 
 func main() {
-	InitMetrics()
+	metrics.InitMetrics()
 
 	go func() {
 		//time.Sleep(20 * time.Second)
@@ -17,14 +19,14 @@ func main() {
 		defer ticker.Stop()
 
 		fetch := func() {
-			power, err := RetrievePowerValues()
+			power, err := redfish.RetrievePowerValues()
 			if err != nil {
 				log.Printf("Error retrieving power values: %v", err)
-				UpdateHealth(false)
+				metrics.UpdateHealth(false)
 				return
 			}
-			UpdateHealth(true)
-			UpdateMetrics(power)
+			metrics.UpdateHealth(true)
+			metrics.UpdateMetrics(power)
 		}
 		fetch()
 

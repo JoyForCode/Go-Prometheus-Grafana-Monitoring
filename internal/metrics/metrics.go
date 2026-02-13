@@ -1,7 +1,8 @@
-package main
+package metrics
 
 import (
 	"github.com/prometheus/client_golang/prometheus"
+	"goprom/internal/redfish"
 )
 
 var (
@@ -33,7 +34,7 @@ func InitMetrics() {
 	prometheus.MustRegister(redfishUp)
 }
 
-func UpdateMetrics(power *PowerControl) {
+func UpdateMetrics(power *redfish.PowerControl) {
 	psuWatts.Set(power.PowerConsumedWatts)
 	psuCapacityWatts.Set(power.PowerCapacityWatts)
 }

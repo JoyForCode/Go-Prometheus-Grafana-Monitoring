@@ -1,4 +1,4 @@
-package main
+package redfish
 
 import (
 	"crypto/tls"
