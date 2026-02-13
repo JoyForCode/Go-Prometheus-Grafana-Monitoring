@@ -12,17 +12,24 @@ func main() {
 	InitMetrics()
 
 	go func() {
-		for {
+		//time.Sleep(20 * time.Second)
+		ticker := time.NewTicker(15 * time.Second)
+		defer ticker.Stop()
+
+		fetch := func() {
 			power, err := RetrievePowerValues()
 			if err != nil {
+				log.Printf("Error retrieving power values: %v", err)
 				UpdateHealth(false)
-				log.Println("Error fetching power values:", err)
-			} else {
-				UpdateHealth(true)
-				UpdateMetrics(power)
+				return
 			}
+			UpdateHealth(true)
+			UpdateMetrics(power)
+		}
+		fetch()
 
-			time.Sleep(20 * time.Second)
+		for range ticker.C {
+			fetch()
 		}
 	}()
 

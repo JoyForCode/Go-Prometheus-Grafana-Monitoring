@@ -2,10 +2,12 @@ package main
 
 import (
 	"crypto/tls"
-	// "fmt"
+	"fmt"
+
 	// "io"
-	"net/http"
 	"encoding/json"
+	"net/http"
+	"time"
 )
 
 type PowerControl struct {
@@ -13,7 +15,7 @@ type PowerControl struct {
 	PowerCapacityWatts float64 `json:"PowerCapacityWatts"`
 }
 
-func RetrievePowerValues() (*PowerControl, error){
+func RetrievePowerValues() (*PowerControl, error) {
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
@@ -23,6 +25,7 @@ func RetrievePowerValues() (*PowerControl, error){
 
 	client := &http.Client{
 		Transport: tr,
+		Timeout:   20 * time.Second,
 	}
 
 	req, err := http.NewRequest(
@@ -44,6 +47,10 @@ func RetrievePowerValues() (*PowerControl, error){
 	}
 
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
 
 	// body, _ := io.ReadAll(resp.Body)
 	// fmt.Println(string(body))
