@@ -8,14 +8,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+	"goprom/internal/models"
 )
 
-type PowerControl struct {
-	PowerConsumedWatts float64 `json:"PowerConsumedWatts"`
-	PowerCapacityWatts float64 `json:"PowerCapacityWatts"`
-}
-
-func RetrievePowerValues() (*PowerControl, error) {
+func RetrievePowerValues() (*models.PowerControl, error) {
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
@@ -55,7 +51,7 @@ func RetrievePowerValues() (*PowerControl, error) {
 	// body, _ := io.ReadAll(resp.Body)
 	// fmt.Println(string(body))
 
-	var power PowerControl
+	var power models.PowerControl
 	err = json.NewDecoder(resp.Body).Decode(&power)
 	if err != nil {
 		return nil, err
