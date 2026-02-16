@@ -48,6 +48,38 @@ var (
 		},
 		[]string{"sensor", "physical_context", "sensor_number"},
 	)
+
+	lowerThresholdNonCritical = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "redfish_temperature_lower_threshold_non_critical_celsius",
+			Help: "Lower non-critical temperature threshold in Celsius.",
+		},
+		[]string{"sensor", "physical_context", "sensor_number"},
+	)
+
+	upperThresholdNonCritical = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "redfish_temperature_upper_threshold_non_critical_celsius",
+			Help: "Upper non-critical temperature threshold in Celsius.",
+		},
+		[]string{"sensor", "physical_context", "sensor_number"},
+	)
+
+	TemperatureHealth = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "redfish_temperature_health",
+			Help: "Health status of the temperature sensor (1=OK, 0.5=Warning, 0=Critical, -1=Unknown).",
+		},
+		[]string{"sensor", "physical_context", "sensor_number"},
+	)
+
+	TemperatureState = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "redfish_temperature_state",
+			Help: "State of the temperature sensor (1=Enabled, 0=Disabled, -1=Unknown).",
+		},
+		[]string{"sensor", "physical_context", "sensor_number"},
+	)
 )
 
 func InitTemperatureMetrics() {
@@ -57,6 +89,10 @@ func InitTemperatureMetrics() {
 		temperatureLowerFatal,
 		temperatureUpperCritical,
 		temperatureUpperFatal,
+		TemperatureHealth,
+		TemperatureState,
+		lowerThresholdNonCritical,
+		upperThresholdNonCritical,
 	)
 }
 
@@ -88,5 +124,48 @@ func UpdateTemperatureMetrics(temp *models.Temperature) {
 
 	if temp.UpperThresholdFatal != nil {
 		temperatureUpperFatal.With(labels).Set(*temp.UpperThresholdFatal)
+	}
+
+	if temp.LowerThresholdNonCritical != nil {
+		lowerThresholdNonCritical.With(labels).Set(*temp.LowerThresholdNonCritical)
+	}
+
+	if temp.UpperThresholdNonCritical != nil {
+		upperThresholdNonCritical.With(labels).Set(*temp.UpperThresholdNonCritical)
+	}
+
+	TemperatureHealth.With(labels).Set(mapHealthToFloat(temp.Status.Health))
+	TemperatureState.With(labels).Set(mapStateToFloat(temp.Status.State))
+}
+
+func mapHealthToFloat(h *string) float64 {
+	if h == nil {
+		return -1
+	}
+
+	switch *h {
+	case "OK":
+		return 1
+	case "Warning":
+		return 0.5
+	case "Critical":
+		return 0
+	default:
+		return -1
+	}
+}
+
+func mapStateToFloat(s *string) float64 {
+	if s == nil {
+		return -1
+	}
+
+	switch *s {
+	case "Enabled":
+		return 1
+	case "Disabled":
+		return 0
+	default:
+		return -1
 	}
 }
