@@ -6,9 +6,9 @@ import (
 
 	// "io"
 	"encoding/json"
+	"goprom/internal/models"
 	"net/http"
 	"time"
-	"goprom/internal/models"
 )
 
 func RetrievePowerValues() (*models.PowerControl, error) {
