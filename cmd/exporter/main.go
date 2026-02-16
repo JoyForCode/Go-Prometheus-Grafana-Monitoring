@@ -12,7 +12,7 @@ import (
 
 func main() {
 	metrics.InitMetrics()
-
+	metrics.InitTemperatureMetrics()
 	go func() {
 		//time.Sleep(20 * time.Second)
 		ticker := time.NewTicker(60 * time.Second)
@@ -28,10 +28,21 @@ func main() {
 			metrics.UpdateHealth(true)
 			metrics.UpdateMetrics(power)
 		}
-		fetch()
 
+		fetch2 := func() {
+			temperature, err := redfish.RetrieveTemperatureValues()
+			if err != nil {
+				log.Printf("Error retrieving temperature values: %v", err)
+				metrics.UpdateHealth(false)
+				return
+			}
+			metrics.UpdateTemperatureMetrics(temperature)
+		}
+		fetch()
+		fetch2()
 		for range ticker.C {
 			fetch()
+			fetch2()
 		}
 	}()
 
