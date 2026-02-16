@@ -1,26 +1,36 @@
 package metrics
 
 import (
+	"strconv"
+
 	"goprom/internal/models"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
 
 var (
-	SystemBoardExhaustTemp = prometheus.NewGauge(
+	ReadingCelsius = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "system_board_exhaust_temperature_celsius",
-			Help: "Current system board exhaust temperature in Celsius",
-		},
+			Name: "current_temperature_reading_celsius",
+			Help: "Current temperature reading in Celsius",
+		}, []string{"name", "physical_context", "sensor_number"},
 	)
 )
 
 func InitTemperatureMetrics() {
-	prometheus.MustRegister(SystemBoardExhaustTemp)
+	prometheus.MustRegister(ReadingCelsius)
 }
 
 func UpdateTemperatureMetrics(temperature *models.Temperature) {
-	SystemBoardExhaustTemp.Set(*temperature.ReadingCelsius)
+	if temperature.ReadingCelsius == nil {
+		return
+	}
+
+	ReadingCelsius.With(prometheus.Labels{
+		"name":             temperature.Name,
+		"physical_context": temperature.PhysicalContext,
+		"sensor_number":    strconv.Itoa(temperature.SensorNumber),
+	}).Set(*temperature.ReadingCelsius)
 }
 
 func mapHeathToFloat(health *string) float64 {
