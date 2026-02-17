@@ -38,11 +38,31 @@ func main() {
 			}
 			metrics.UpdateTemperatureMetrics(temperature)
 		}
+
+		fetch3 := func() {
+			client := redfish.NewClient(
+				redfish.BaseURL,
+				"root",
+				"calvin",
+			)
+
+			temps, err := client.GetTemperatures(redfish.Temperature_Endpoints)
+			if err != nil {
+				log.Printf("Error retrieving temperature values: %v", err)
+				return
+			}
+
+			for _, t := range temps {
+				metrics.UpdateTemperatureMetrics(t)
+			}
+		}
 		fetch()
 		fetch2()
+		fetch3()
 		for range ticker.C {
 			fetch()
 			fetch2()
+			fetch3()
 		}
 	}()
 
