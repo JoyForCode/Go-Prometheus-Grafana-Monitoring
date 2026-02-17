@@ -36,7 +36,7 @@ func NewClient(baseURL, username, password string) *Client {
 func (c *Client) Get(endpoint string, target interface{}) (int, error) {
 	req, err := http.NewRequest("GET", c.BaseURL+endpoint, nil)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	req.SetBasicAuth(c.Username, c.Password)
@@ -44,7 +44,7 @@ func (c *Client) Get(endpoint string, target interface{}) (int, error) {
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	defer resp.Body.Close()
