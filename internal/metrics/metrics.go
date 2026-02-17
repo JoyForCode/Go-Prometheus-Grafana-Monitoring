@@ -15,8 +15,8 @@ var (
 
 	psuCapacityWatts = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Name:"power_capacity_watts",
-			Help:"Maximum PSU power capacity in watts",
+			Name: "power_capacity_watts",
+			Help: "Maximum PSU power capacity in watts",
 		},
 	)
 
