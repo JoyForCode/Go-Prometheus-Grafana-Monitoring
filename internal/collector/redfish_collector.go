@@ -1,6 +1,11 @@
 package collector
 
-import "github.com/prometheus/client_golang/prometheus"
+import (
+	"goprom/internal/models"
+	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus"
+)
 
 type RedfishAPI interface {
 	Get(endpoint string, target interface{}) (int, error)
@@ -46,3 +51,52 @@ func (c *RedfishCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.redfishUpDesc
 }
 
+func (c *RedfishCollector) Collect(ch chan<- prometheus.Metric) {
+
+	var power models.PowerControl
+	status, err := c.client.Get("/redfish/v1/Chassis/System.Embedded.1/Power", &power)
+	if err != nil {
+		ch <- prometheus.MustNewConstMetric(
+			c.redfishUpDesc,
+			prometheus.GaugeValue,
+			0,
+		)
+		return
+	}
+
+	if status == http.StatusNotFound {
+		ch <- prometheus.MustNewConstMetric(
+			c.redfishUpDesc,
+			prometheus.GaugeValue,
+			1,
+		)
+		return
+	}
+
+	if status != http.StatusOK {
+		ch <- prometheus.MustNewConstMetric(
+			c.redfishUpDesc,
+			prometheus.GaugeValue,
+			0,
+		)
+		return
+	}
+
+	ch <- prometheus.MustNewConstMetric(
+		c.powerConsumedDesc,
+		prometheus.GaugeValue,
+		float64(power.PowerConsumedWatts),
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		c.powerCapacityDesc,
+		prometheus.GaugeValue,
+		float64(power.PowerCapacityWatts),
+	)
+
+	ch <- prometheus.MustNewConstMetric(
+		c.redfishUpDesc,
+		prometheus.GaugeValue,
+		1,
+	)
+}
