@@ -54,7 +54,7 @@ func (c *RedfishCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *RedfishCollector) Collect(ch chan<- prometheus.Metric) {
 
 	var power models.PowerControl
-	status, err := c.client.Get("/redfish/v1/Chassis/System.Embedded.1/Power", &power)
+	status, err := c.client.Get("/redfish/v1/Chassis/System.Embedded.1/Power/PowerControl", &power)
 	if err != nil {
 		ch <- prometheus.MustNewConstMetric(
 			c.redfishUpDesc,
