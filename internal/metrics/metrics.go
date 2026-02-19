@@ -2,7 +2,7 @@ package metrics
 
 import (
 	"github.com/prometheus/client_golang/prometheus"
-	"goprom/internal/redfish"
+	"goprom/internal/models"
 )
 
 var (
@@ -15,8 +15,8 @@ var (
 
 	psuCapacityWatts = prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Name:"power_capacity_watts",
-			Help:"Maximum PSU power capacity in watts",
+			Name: "power_capacity_watts",
+			Help: "Maximum PSU power capacity in watts",
 		},
 	)
 
@@ -34,7 +34,7 @@ func InitMetrics() {
 	prometheus.MustRegister(redfishUp)
 }
 
-func UpdateMetrics(power *redfish.PowerControl) {
+func UpdateMetrics(power *models.PowerControl) {
 	psuWatts.Set(power.PowerConsumedWatts)
 	psuCapacityWatts.Set(power.PowerCapacityWatts)
 }
